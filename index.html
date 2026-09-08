@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFCly — Transformez chaque client en avis Google</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0C11;
+    --bg-2:#12151D;
+    --surface:#171B25;
+    --edge:rgba(255,255,255,0.09);
+    --paper:#FFFFFF;
+    --paper-dim:#F3F4F8;
+    --ink:#0E1015;
+    --ink-dim:rgba(14,16,21,0.62);
+    --cobalt:#3D5CFF;
+    --cobalt-light:#7C93FF;
+    --cobalt-deep:#2540C4;
+    --gold:#F3B24C;
+    --mint:#38C793;
+    --line-light:rgba(14,16,21,0.10);
+    --card-ratio:1.586;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;} }
+  h1,h2,h3,.display{ font-family:'Manrope', sans-serif; font-weight:700; letter-spacing:-0.02em; }
+  a{ color:inherit; text-decoration:none; }
+  img,svg{ display:block; }
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 32px; }
+  @media (max-width:640px){ .wrap{ padding:0 20px; } }
+  .icon{ flex-shrink:0; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,255,255,0.86);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line-light);
+  }
+  nav.wrap{ display:flex; align-items:center; justify-content:space-between; height:78px; }
+  .logo{ display:flex; align-items:center; gap:10px; font-family:'Manrope',sans-serif; font-weight:800; font-size:1.28rem; }
+  .logo-mark{
+    width:32px; height:32px; border-radius:9px;
+    background:linear-gradient(135deg,var(--cobalt-light),var(--cobalt-deep));
+    position:relative;
+  }
+  .logo-mark svg{ position:absolute; inset:0; margin:auto; }
+  .nav-links{ display:flex; gap:38px; font-size:0.94rem; font-weight:600; }
+  .nav-links a{ opacity:0.68; transition:opacity .2s; }
+  .nav-links a:hover{ opacity:1; }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:13px 26px; border-radius:11px;
+    font-weight:700; font-size:0.92rem; font-family:'Inter',sans-serif;
+    cursor:pointer; border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn:focus-visible{ outline:2px solid var(--cobalt); outline-offset:3px; }
+  .btn-cobalt{
+    background:linear-gradient(135deg,var(--cobalt-light),var(--cobalt));
+    color:#fff;
+    box-shadow:0 10px 24px -10px rgba(61,92,255,0.55);
+  }
+  .btn-cobalt:hover{ box-shadow:0 14px 30px -8px rgba(61,92,255,0.65); }
+  .btn-ghost-dark{ border-color:rgba(14,16,21,0.18); color:var(--ink); }
+  .btn-ghost-dark:hover{ border-color:rgba(14,16,21,0.4); }
+  .btn-ghost-light{ border-color:rgba(255,255,255,0.22); color:var(--paper); }
+  .btn-ghost-light:hover{ border-color:rgba(255,255,255,0.45); }
+  @media (max-width:840px){ .nav-links{ display:none; } }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 480px at 82% -10%, rgba(61,92,255,0.28), transparent 60%),
+      radial-gradient(700px 400px at 8% 110%, rgba(243,178,76,0.14), transparent 60%),
+      var(--bg);
+    color:var(--paper);
+    padding:104px 0 116px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size:26px 26px;
+    mask-image:linear-gradient(180deg, rgba(0,0,0,0.5), transparent 70%);
+    pointer-events:none;
+  }
+  .hero .wrap{ display:grid; grid-template-columns:1.15fr 0.85fr; gap:60px; align-items:center; position:relative; }
+  @media (max-width:900px){ .hero .wrap{ grid-template-columns:1fr; gap:64px; } .hero{ padding:68px 0 76px; } }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:9px;
+    font-size:0.85rem; font-weight:700; color:var(--cobalt-light);
+    background:rgba(61,92,255,0.12);
+    border:1px solid rgba(61,92,255,0.3);
+    padding:8px 16px 8px 12px; border-radius:100px;
+    margin-bottom:26px;
+  }
+  .eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--gold); }
+  .hero h1{ font-size:clamp(2.5rem,4.4vw,3.6rem); line-height:1.08; max-width:13ch; }
+  .hero h1 .grad{
+    background:linear-gradient(100deg,var(--cobalt-light),var(--gold) 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p.lead{ margin-top:24px; font-size:1.14rem; max-width:46ch; color:rgba(255,255,255,0.68); }
+  .hero-cta{ display:flex; gap:14px; margin-top:36px; flex-wrap:wrap; }
+  .hero-stats{ display:flex; gap:42px; margin-top:58px; border-top:1px solid rgba(255,255,255,0.12); padding-top:28px; }
+  .hero-stats div strong{ display:block; font-family:'Manrope',sans-serif; font-size:1.7rem; font-weight:800; color:var(--paper); }
+  .hero-stats div span{ font-size:0.85rem; color:rgba(255,255,255,0.5); }
+
+  /* hero art */
+  .hero-art{ position:relative; height:430px; }
+  .nfc-card{
+    position:absolute; width:290px; aspect-ratio:var(--card-ratio);
+    top:10px; left:20px; border-radius:20px;
+    background:
+      linear-gradient(125deg, rgba(255,255,255,0.14), transparent 45%),
+      linear-gradient(150deg,#232B44 0%, #12151D 65%);
+    border:1px solid rgba(255,255,255,0.14);
+    box-shadow:0 45px 80px -26px rgba(0,0,0,0.7);
+    padding:24px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .nfc-card .chip{
+    width:40px; height:30px; border-radius:7px;
+    background:linear-gradient(135deg,var(--gold),#C6821F);
+  }
+  .nfc-card .brand{
+    font-family:'Manrope',sans-serif; font-weight:800; font-size:1.05rem; color:var(--paper);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .waves{ position:absolute; top:20px; right:20px; }
+  .waves span{
+    position:absolute; border:1.5px solid var(--cobalt-light);
+    border-radius:50%; opacity:0; animation:ripple 2.6s ease-out infinite;
+  }
+  .waves span:nth-child(1){ animation-delay:0s; }
+  .waves span:nth-child(2){ animation-delay:0.7s; }
+  .waves span:nth-child(3){ animation-delay:1.4s; }
+  @keyframes ripple{
+    0%{ width:14px; height:14px; top:0; left:0; opacity:0.9; }
+    100%{ width:72px; height:72px; top:-29px; left:-29px; opacity:0; }
+  }
+  .phone-outline{
+    position:absolute; width:154px; height:308px; right:14px; bottom:0;
+    border-radius:28px; border:1.5px solid rgba(255,255,255,0.24);
+    background:rgba(255,255,255,0.035);
+  }
+  .phone-outline::before{
+    content:''; position:absolute; inset:14px; border-radius:16px;
+    background:linear-gradient(165deg, rgba(61,92,255,0.28), rgba(61,92,255,0.02));
+  }
+  .float-chip{
+    position:absolute; bottom:34px; left:0;
+    background:rgba(255,255,255,0.96); color:var(--ink);
+    border-radius:13px; padding:13px 17px;
+    font-size:0.85rem; font-weight:700;
+    box-shadow:0 24px 46px -18px rgba(0,0,0,0.55);
+    display:flex; align-items:center; gap:9px;
+  }
+  .float-chip .stars{ color:var(--gold); letter-spacing:1px; }
+  .float-chip.small{
+    top:24px; right:0; bottom:auto;
+    font-size:0.78rem; padding:10px 14px;
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ padding:112px 0; }
+  @media (max-width:700px){ section{ padding:76px 0; } }
+  .section-head{ max-width:640px; margin-bottom:58px; }
+  .section-head .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.85rem; color:var(--cobalt-deep); font-weight:700; margin-bottom:16px;
+  }
+  .section-head .kicker::before{ content:''; width:16px; height:2px; background:var(--cobalt); border-radius:2px; }
+  .section-head h2{ font-size:clamp(1.9rem,3vw,2.5rem); line-height:1.16; }
+  .section-head p{ margin-top:16px; color:var(--ink-dim); font-size:1.05rem; max-width:52ch; }
+
+  /* ---------- COMMENT CA MARCHE ---------- */
+  .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line-light); border:1px solid var(--line-light); border-radius:18px; overflow:hidden; }
+  @media (max-width:800px){ .steps{ grid-template-columns:1fr; } }
+  .step{ background:var(--paper); padding:42px 36px; }
+  .step .step-icon{
+    width:46px; height:46px; border-radius:12px;
+    background:var(--paper-dim);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--cobalt); margin-bottom:22px;
+  }
+  .step h3{ font-size:1.18rem; margin-bottom:10px; }
+  .step p{ color:var(--ink-dim); font-size:0.96rem; }
+
+  /* ---------- PRODUITS ---------- */
+  .products{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+  @media (max-width:800px){ .products{ grid-template-columns:1fr; } }
+  .product-card{
+    border:1px solid var(--line-light); border-radius:22px; padding:38px;
+    background:var(--paper); display:flex; flex-direction:column;
+  }
+  .product-card.featured{
+    background:linear-gradient(165deg,#12151D,#0A0C11);
+    color:var(--paper); border-color:#12151D;
+  }
+  .product-visual{ aspect-ratio:var(--card-ratio); border-radius:16px; margin-bottom:28px; position:relative; overflow:hidden; }
+  .product-card:not(.featured) .product-visual{ background:linear-gradient(150deg,#EEF0F6,#DEE3F2); border:1px solid var(--line-light); }
+  .product-card.featured .product-visual{
+    background:linear-gradient(150deg, rgba(61,92,255,0.22), #12151D 60%);
+    border:1px solid rgba(124,147,255,0.3);
+  }
+  .product-visual .tag-chip{ position:absolute; top:18px; left:18px; width:32px; height:24px; border-radius:6px; background:linear-gradient(135deg,var(--gold),#C6821F); }
+  .product-visual .tag-logo{ position:absolute; bottom:18px; left:18px; font-family:'Manrope',sans-serif; font-weight:800; font-size:0.95rem; color:var(--cobalt-light); }
+  .product-visual .tag-qr{
+    position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:6px;
+    background:repeating-conic-gradient(rgba(14,16,21,0.85) 0% 25%, transparent 0% 50%) 0 0/8px 8px;
+    opacity:0.7;
+  }
+  .product-card.featured .product-visual .tag-qr{ background:repeating-conic-gradient(rgba(255,255,255,0.85) 0% 25%, transparent 0% 50%) 0 0/8px 8px; }
+  .product-card h3{ font-size:1.4rem; margin-bottom:6px; }
+  .product-price{ font-family:'Manrope',sans-serif; font-size:2.1rem; font-weight:800; margin:16px 0 24px; }
+  .product-price span{ font-size:0.95rem; font-family:'Inter',sans-serif; font-weight:500; opacity:0.55; }
+  .feature-list{ list-style:none; display:flex; flex-direction:column; gap:12px; margin-bottom:30px; flex:1; }
+  .feature-list li{ display:flex; align-items:flex-start; gap:11px; font-size:0.95rem; }
+  .feature-list li svg{ margin-top:2px; color:var(--cobalt); }
+  .product-card.featured .feature-list li svg{ color:var(--cobalt-light); }
+  .feature-list li .highlight{ color:var(--cobalt-deep); font-weight:700; }
+  .product-card.featured .feature-list li .highlight{ color:var(--gold); }
+
+  /* ---------- ABONNEMENTS ---------- */
+  .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; align-items:stretch; }
+  @media (max-width:960px){ .plans{ grid-template-columns:1fr; max-width:440px; margin:0 auto; } }
+  .plan{ border-radius:22px; padding:36px 32px; display:flex; flex-direction:column; border:1px solid var(--line-light); background:var(--paper); position:relative; }
+  .plan.mid{
+    background:linear-gradient(165deg,#171B25,#0A0C11);
+    color:var(--paper); border-color:#171B25;
+    transform:translateY(-16px);
+    box-shadow:0 36px 64px -22px rgba(10,12,17,0.45);
+  }
+  @media (max-width:960px){ .plan.mid{ transform:none; } }
+  .plan-badge{
+    position:absolute; top:-14px; left:32px;
+    background:linear-gradient(135deg,var(--gold),#C6821F);
+    color:#231604; font-size:0.78rem; font-weight:800;
+    padding:7px 16px; border-radius:100px;
+  }
+  .plan-name{ font-family:'Manrope',sans-serif; font-size:1.28rem; font-weight:800; margin-bottom:6px; }
+  .plan-tagline{ font-size:0.9rem; opacity:0.6; margin-bottom:24px; }
+  .plan-price{ font-family:'Manrope',sans-serif; font-size:2.5rem; font-weight:800; }
+  .plan-price span{ font-size:0.95rem; font-family:'Inter',sans-serif; opacity:0.55; font-weight:500; }
+  .plan hr{ border:none; border-top:1px solid var(--line-light); margin:26px 0; }
+  .plan.mid hr{ border-top:1px solid rgba(255,255,255,0.12); }
+  .plan-features{ list-style:none; display:flex; flex-direction:column; gap:14px; flex:1; margin-bottom:30px; }
+  .plan-features li{ display:flex; gap:11px; font-size:0.93rem; align-items:flex-start; }
+  .plan-features li svg{ flex-shrink:0; margin-top:2px; color:var(--cobalt); }
+  .plan.mid .plan-features li svg{ color:var(--cobalt-light); }
+  .plan-features .highlight{ color:var(--cobalt-deep); font-weight:700; }
+  .plan.mid .plan-features .highlight{ color:var(--gold); }
+  .plan .btn{ width:100%; }
+
+  /* ---------- DIFFERENCIATION ---------- */
+  .diff{ background:var(--paper-dim); }
+  .diff-grid{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:64px; align-items:center; }
+  @media (max-width:900px){ .diff-grid{ grid-template-columns:1fr; } }
+  .diff-stat{ font-family:'Manrope',sans-serif; font-size:clamp(3.4rem,7vw,5.2rem); font-weight:800; color:var(--cobalt-deep); line-height:0.95; }
+  .diff-stat + p{ margin-top:20px; font-size:1.05rem; max-width:34ch; color:var(--ink-dim); }
+  .mock-dash-link{ display:block; border-radius:20px; transition:transform .2s ease, box-shadow .2s ease; }
+  .mock-dash-link:hover{ transform:translateY(-4px); box-shadow:0 30px 60px -24px rgba(10,12,17,0.45); }
+  .mock-dash{ background:linear-gradient(165deg,#171B25,#0A0C11); border-radius:20px; padding:32px; color:var(--paper); border:1px solid rgba(255,255,255,0.08); position:relative; }
+  .mock-cta{
+    display:flex; align-items:center; gap:8px;
+    margin-top:24px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.09);
+    font-size:0.88rem; font-weight:700; color:var(--cobalt-light);
+  }
+  .mock-dash-link:hover .mock-cta{ color:var(--gold); }
+  .mock-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; font-size:0.88rem; opacity:0.65; }
+  .mock-bars{ display:flex; align-items:flex-end; gap:10px; height:120px; margin-bottom:24px; }
+  .mock-bars .bar{ flex:1; border-radius:6px 6px 0 0; background:linear-gradient(180deg,var(--cobalt-light),var(--cobalt-deep)); }
+  .mock-rows{ display:flex; flex-direction:column; gap:13px; }
+  .mock-row{ display:flex; justify-content:space-between; font-size:0.88rem; padding-bottom:13px; border-bottom:1px solid rgba(255,255,255,0.09); }
+  .mock-row span:last-child{ color:var(--mint); font-weight:700; }
+
+  /* ---------- FINAL CTA ---------- */
+  .final-cta{
+    background:
+      radial-gradient(900px 420px at 50% -20%, rgba(61,92,255,0.3), transparent 60%),
+      var(--bg);
+    color:var(--paper); text-align:center;
+  }
+  .final-cta h2{ font-size:clamp(2rem,4vw,3rem); max-width:16ch; margin:0 auto; }
+  .final-cta p{ margin-top:18px; color:rgba(255,255,255,0.65); max-width:44ch; margin-left:auto; margin-right:auto; }
+  .final-cta .hero-cta{ justify-content:center; margin-top:34px; }
+
+  /* ---------- FOOTER ---------- */
+  footer{ background:#07080B; color:rgba(255,255,255,0.55); padding:58px 0 34px; font-size:0.9rem; }
+  .footer-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:32px; padding-bottom:32px; border-bottom:1px solid rgba(255,255,255,0.09); margin-bottom:24px; }
+  .footer-cols{ display:flex; gap:64px; flex-wrap:wrap; }
+  .footer-cols h4{ color:var(--paper); font-weight:700; font-size:0.88rem; margin-bottom:14px; }
+  .footer-cols ul{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .footer-cols a{ opacity:0.75; transition:opacity .2s; }
+  .footer-cols a:hover{ opacity:1; }
+  .footer-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; opacity:0.5; font-size:0.82rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" stroke="white" stroke-width="1.2" fill="none"/></svg>
+      </div>
+      NFCly
+    </div>
+    <div class="nav-links">
+      <a href="#comment-ca-marche">Comment ça marche</a>
+      <a href="#produits">Cartes</a>
+      <a href="#abonnements">Abonnements</a>
+      <a href="#difference">Pourquoi NFCly</a>
+      <a href="dashboard.html">Tableau de bord</a>
+    </div>
+    <a href="#abonnements" class="btn btn-ghost-dark">Voir les offres</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow"><span class="dot"></span> Cartes NFC pour commerces &amp; entreprises</div>
+      <h1>Un simple geste, <span class="grad">un avis Google</span> en plus.</h1>
+      <p class="lead">Le client approche son téléphone de la carte, ou scanne le QR code. Il atterrit directement sur votre page d'avis Google, sans chercher, sans télécharger d'application. Vous récoltez des avis en continu, et vous voyez exactement d'où ils viennent.</p>
+      <div class="hero-cta">
+        <a href="#produits" class="btn btn-cobalt">Commander une carte</a>
+        <a href="#abonnements" class="btn btn-ghost-light">Comparer les abonnements</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>&lt; 3 s</strong><span>pour rediriger un client</span></div>
+        <div><strong>0</strong><span>application à installer</span></div>
+        <div><strong>100%</strong><span>des scans suivis en direct</span></div>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="nfc-card">
+        <div class="brand">NFCly
+          <div class="waves"><span></span><span></span><span></span></div>
+        </div>
+        <div class="chip"></div>
+      </div>
+      <div class="phone-outline"></div>
+      <div class="float-chip"><span class="stars">★★★★★</span> Nouvel avis reçu</div>
+      <div class="float-chip small">+18 scans aujourd'hui</div>
+    </div>
+  </div>
+</section>
+
+<section id="comment-ca-marche">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Le principe</div>
+      <h2>Trois étapes entre votre client et son avis.</h2>
+      <p>Aucune formation nécessaire, ni pour vous, ni pour votre client. La carte fait tout le travail.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12C4 7.58 7.58 4 12 4M12 4C16.42 4 20 7.58 20 12M12 4V2M8 8L16 16M16 8L14 10M8 16L10 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <h3>Le client tape ou scanne</h3>
+        <p>Il approche son téléphone de la carte NFC, ou scanne le QR code imprimé dessus s'il préfère.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Redirection immédiate</h3>
+        <p>Son navigateur s'ouvre directement sur votre fiche Google, prêt à recevoir un avis en quelques secondes.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 19V13M11 19V8M18 19V4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <h3>Vous suivez tout</h3>
+        <p>Chaque scan remonte dans votre tableau de bord : vous savez quand, où et combien de clients ont été sollicités.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="produits" style="background:var(--paper-dim);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Achat unique</div>
+      <h2>Votre carte NFC, prête à poser en caisse.</h2>
+      <p>Une carte physique, un lien vers vos avis Google, configurée avant l'envoi. Choisissez la version à votre image si vous voulez qu'elle porte votre marque.</p>
+    </div>
+    <div class="products">
+      <div class="product-card">
+        <div class="product-visual"><div class="tag-chip"></div><div class="tag-qr"></div></div>
+        <h3>Carte NFC standard</h3>
+        <div class="product-price">19,90&nbsp;€ <span>achat unique</span></div>
+        <ul class="feature-list">
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Carte NFC prête à l'emploi</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Lien direct vers votre page avis Google</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> QR code imprimé sur la carte</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Configuration initiale incluse</li>
+        </ul>
+        <a href="#" class="btn btn-ghost-dark">Choisir cette carte</a>
+      </div>
+      <div class="product-card featured">
+        <div class="product-visual"><div class="tag-chip"></div><div class="tag-qr"></div><div class="tag-logo">Votre logo</div></div>
+        <h3>Carte NFC personnalisée</h3>
+        <div class="product-price">34,90&nbsp;€ <span>achat unique</span></div>
+        <ul class="feature-list">
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Carte NFC prête à l'emploi</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Lien direct vers votre page avis Google</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> QR code imprimé sur la carte</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Configuration initiale incluse</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <span class="highlight">Votre logo imprimé sur la carte</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Couleurs de votre entreprise reprises sur le design</li>
+        </ul>
+        <a href="#" class="btn btn-cobalt">Personnaliser ma carte</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="abonnements">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Abonnements</div>
+      <h2>La carte récolte les avis. L'abonnement vous dit tout le reste.</h2>
+      <p>Sans abonnement, votre carte redirige vers un seul lien fixe. Avec un abonnement, vous pilotez la destination, vous suivez chaque scan, et vous répondez à vos clients sans y penser.</p>
+    </div>
+    <div class="plans">
+
+      <div class="plan">
+        <div class="plan-name">Essentiel</div>
+        <div class="plan-tagline">Pour garder la main sur votre carte</div>
+        <div class="plan-price">9&nbsp;€ <span>/ mois</span></div>
+        <hr>
+        <ul class="plan-features">
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Modification du lien de destination à tout moment</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <span class="highlight">Statistiques basiques</span> : nombre de scans</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Évolution des scans dans le temps</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Tableau de bord accessible depuis votre espace NFCly</li>
+        </ul>
+        <a href="#" class="btn btn-ghost-dark">Démarrer avec Essentiel</a>
+      </div>
+
+      <div class="plan mid">
+        <div class="plan-badge">Le plus choisi</div>
+        <div class="plan-name">Business</div>
+        <div class="plan-tagline">Pour comprendre et faire grandir vos avis</div>
+        <div class="plan-price">39&nbsp;€ <span>/ mois</span></div>
+        <hr>
+        <ul class="plan-features">
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Tout Essentiel, plus :</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Scans détaillés par jour, semaine et mois</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Appareil utilisé et horaires de scan</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Comparaison entre deux périodes</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <span class="highlight">Statistiques de conversion</span> : scans → avis réellement postés</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Plusieurs cartes NFC et plusieurs liens gérés depuis un seul compte</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <span class="highlight">Bot de réponse simple</span> qui remercie chaque client ayant laissé un avis</li>
+        </ul>
+        <a href="#" class="btn btn-cobalt">Choisir Business</a>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">Premium</div>
+        <div class="plan-tagline">Pour piloter toute la relation client</div>
+        <div class="plan-price">49&nbsp;€ <span>/ mois</span></div>
+        <hr>
+        <ul class="plan-features">
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Tout Business, plus :</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Page de redirection au choix du client : avis Google, site web ou réseaux sociaux</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <span class="highlight">Bot de réponse intelligent</span> aux réponses ciblées (nouveautés, promotions...)</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Réponses personnalisables directement depuis le tableau de bord</li>
+        </ul>
+        <a href="#" class="btn btn-ghost-dark">Choisir Premium</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="difference" class="diff">
+  <div class="wrap">
+    <div class="diff-grid">
+      <div>
+        <div class="diff-stat">90%</div>
+        <p>des cartes NFC vendues sur le marché ne proposent aucun suivi. Le client pose la carte en caisse et n'a plus aucune idée de son efficacité.</p>
+        <p style="margin-top:22px;">Chez NFCly, chaque scan devient une donnée exploitable, dans un tableau de bord pensé pour les commerçants, pas pour les développeurs.</p>
+      </div>
+      <a href="dashboard.html" class="mock-dash-link">
+        <div class="mock-dash">
+          <div class="mock-head"><span>Tableau de bord — Carte comptoir</span><span>7 derniers jours</span></div>
+          <div class="mock-bars">
+            <div class="bar" style="height:35%"></div>
+            <div class="bar" style="height:52%"></div>
+            <div class="bar" style="height:44%"></div>
+            <div class="bar" style="height:68%"></div>
+            <div class="bar" style="height:58%"></div>
+            <div class="bar" style="height:80%"></div>
+            <div class="bar" style="height:71%"></div>
+          </div>
+          <div class="mock-rows">
+            <div class="mock-row"><span>Scans cette semaine</span><span>214</span></div>
+            <div class="mock-row"><span>Taux de conversion en avis</span><span>38%</span></div>
+            <div class="mock-row"><span>Heure la plus active</span><span>12h–14h</span></div>
+          </div>
+          <div class="mock-cta">Ouvrir le tableau de bord complet
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="wrap">
+    <h2>Vos prochains avis Google sont à un tap de distance.</h2>
+    <p>Commandez votre carte, choisissez l'abonnement qui suit vos objectifs, et laissez vos clients faire le reste.</p>
+    <div class="hero-cta">
+      <a href="#produits" class="btn btn-cobalt">Commander ma carte NFC</a>
+      <a href="#abonnements" class="btn btn-ghost-light">Voir les abonnements</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="logo" style="color:var(--paper);">
+        <div class="logo-mark"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" stroke="white" stroke-width="1.2" fill="none"/></svg></div>
+        NFCly
+      </div>
+      <div class="footer-cols">
+        <div>
+          <h4>Produit</h4>
+          <ul>
+            <li><a href="#produits">Cartes NFC</a></li>
+            <li><a href="#abonnements">Abonnements</a></li>
+            <li><a href="#comment-ca-marche">Comment ça marche</a></li>
+            <li><a href="dashboard.html">Tableau de bord</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Entreprise</h4>
+          <ul>
+            <li><a href="#difference">Pourquoi NFCly</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Mentions légales</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul><li><a href="mailto:contact@nfcly.fr">contact@nfcly.fr</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NFCly. Tous droits réservés.</span>
+      <span>Cartes NFC &amp; QR code pour la collecte d'avis Google.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
